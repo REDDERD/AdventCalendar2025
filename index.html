@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventskalender 2024</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Schneefall Animation */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 9999;
+            color: #fff;
+            font-size: 1em;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+            font-style: italic;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Door Card */
+        .door {
+            position: relative;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .door::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            background-size: 200% 200%;
+        }
+
+        .door:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .door.locked {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .door.locked:hover {
+            transform: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .door.opened {
+            background: linear-gradient(135deg, #2d7a3e 0%, #1a4d2e 100%);
+        }
+
+        .door-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 1;
+        }
+
+        .door-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .door-icon {
+            font-size: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .door.locked .door-icon::before {
+            content: '🔒';
+        }
+
+        .door:not(.locked):not(.opened) .door-icon::before {
+            content: '🎁';
+        }
+
+        .door.opened .door-icon::before {
+            content: '✨';
+        }
+
+        /* Story Page */
+        .story-page {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .story-page.active {
+            display: block;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .story-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        .story-title {
+            font-size: 2.5rem;
+            color: #c41e3a;
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 1rem;
+        }
+
+        .story-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .story-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: justify;
+        }
+
+        .story-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .door-number {
+                font-size: 3rem;
+            }
+
+            .story-container {
+                padding: 2rem;
+            }
+
+            .story-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Schneefall Container -->
+    <div id="snow-container"></div>
+
+    <!-- Hauptseite -->
+    <div id="main-page">
+        <header>
+            <h1>🎄 Adventskalender 2024 🎄</h1>
+            <p class="subtitle">24 Türchen voller Geschichten und Überraschungen</p>
+        </header>
+
+        <div class="container">
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+    </div>
+
+    <!-- Story Seiten -->
+    <div id="story-pages"></div>
+
+    <script>
+        // Konfiguration
+        const CURRENT_YEAR = new Date().getFullYear();
+        const CURRENT_MONTH = new Date().getMonth();
+        const CURRENT_DAY = new Date().getDate();
+        
+        // Prüfe ob Dezember ist (für Testzwecke kannst du das ändern)
+        const isDecember = CURRENT_MONTH === 11; // 11 = Dezember
+        
+        // Für Tests: Setze auf true um alle Türchen freizuschalten
+        const DEBUG_MODE = false;
+
+        // Schneefall erstellen
+        function createSnowflakes() {
+            const container = document.getElementById('snow-container');
+            const snowflakeCount = 50;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+                container.appendChild(snowflake);
+            }
+        }
+
+        // LocalStorage Funktionen
+        function getOpenedDoors() {
+            const opened = localStorage.getItem('adventcalendar_opened');
+            return opened ? JSON.parse(opened) : [];
+        }
+
+        function markDoorAsOpened(day) {
+            const opened = getOpenedDoors();
+            if (!opened.includes(day)) {
+                opened.push(day);
+                localStorage.setItem('adventcalendar_opened', JSON.stringify(opened));
+            }
+        }
+
+        function isDoorUnlocked(day) {
+            if (DEBUG_MODE) return true;
+            if (!isDecember) return false;
+            return CURRENT_DAY >= day;
+        }
+
+        function isDoorOpened(day) {
+            return getOpenedDoors().includes(day);
+        }
+
+        // Kalender erstellen
+        function createCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const openedDoors = getOpenedDoors();
+
+            for (let i = 1; i <= 24; i++) {
+                const door = document.createElement('div');
+                door.className = 'door';
+                
+                const unlocked = isDoorUnlocked(i);
+                const opened = isDoorOpened(i);
+
+                if (!unlocked) {
+                    door.classList.add('locked');
+                } else if (opened) {
+                    door.classList.add('opened');
+                }
+
+                door.innerHTML = `
+                    <div class="door-content">
+                        <div class="door-number">${i}</div>
+                        <div class="door-icon"></div>
+                    </div>
+                `;
+
+                if (unlocked) {
+                    door.addEventListener('click', () => openDoor(i));
+                }
+
+                grid.appendChild(door);
+            }
+        }
+
+        // Türchen öffnen
+        function openDoor(day) {
+            markDoorAsOpened(day);
+            showStoryPage(day);
+        }
+
+        // Story Seite anzeigen
+        async function showStoryPage(day) {
+            document.getElementById('main-page').style.display = 'none';
+            
+            let storyPage = document.getElementById(`story-${day}`);
+            
+            if (!storyPage) {
+                storyPage = document.createElement('div');
+                storyPage.id = `story-${day}`;
+                storyPage.className = 'story-page';
+                
+                // Versuche Story und Bild zu laden
+                const storyText = await loadStory(day);
+                const imageUrl = await loadImage(day);
+                
+                storyPage.innerHTML = `
+                    <a href="#" class="back-button" onclick="backToCalendar(); return false;">← Zurück zum Kalender</a>
+                    <div class="story-container">
+                        <h2 class="story-title">Türchen ${day}</h2>
+                        ${imageUrl ? `<img src="${imageUrl}" alt="Bild für Tag ${day}" class="story-image">` : ''}
+                        <div class="story-text">${storyText}</div>
+                    </div>
+                `;
+                
+                document.getElementById('story-pages').appendChild(storyPage);
+            }
+            
+            storyPage.classList.add('active');
+        }
+
+        // Story laden
+        async function loadStory(day) {
+            try {
+                const response = await fetch(`stories/day${day}.txt`);
+                if (response.ok) {
+                    const text = await response.text();
+                    return text.split('\n').map(p => `<p>${p}</p>`).join('');
+                }
+            } catch (e) {
+                console.log(`Story für Tag ${day} nicht gefunden`);
+            }
+            
+            return `<p>Hier kommt die Geschichte für Tag ${day}!</p>
+                    <p>Erstelle eine Datei <code>stories/day${day}.txt</code> in deinem Repository, um hier deine eigene Geschichte anzuzeigen.</p>`;
+        }
+
+        // Bild laden
+        async function loadImage(day) {
+            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            for (const ext of extensions) {
+                try {
+                    const url = `images/day${day}.${ext}`;
+                    const response = await fetch(url, { method: 'HEAD' });
+                    if (response.ok) {
+                        return url;
+                    }
+                } catch (e) {
+                    continue;
+                }
+            }
+            
+            return null;
+        }
+
+        // Zurück zum Kalender
+        function backToCalendar() {
+            document.querySelectorAll('.story-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('main-page').style.display = 'block';
+            
+            // Kalender neu laden um geöffnete Türchen anzuzeigen
+            document.getElementById('calendar-grid').innerHTML = '';
+            createCalendar();
+        }
+
+        // Initialisierung
+        createSnowflakes();
+        createCalendar();
+    </script>
+</body>
+</html>

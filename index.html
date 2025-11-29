@@ -346,8 +346,9 @@
         // Prüfe ob Dezember ist (für Testzwecke kannst du das ändern)
         const isDecember = CURRENT_MONTH === 11; // 11 = Dezember
         
-        // Für Tests: Setze auf true um alle Türchen freizuschalten
-        const DEBUG_MODE = true;
+        // Für Tests: Setze auf true um alle Türchen freizuschalten (wird über URL gesetzt)
+        const urlParams = new URLSearchParams(window.location.search);
+        const DEBUG_MODE = urlParams.get("debug") === "true";
 
         // Schneefall erstellen
         function createSnowflakes() {
